@@ -1,0 +1,47 @@
+/**
+ * All IE columns are slightly shorter, as IE has a tendency to round values UP,
+ * which could have us end up with a total width exceeding 100%.
+ */
+.onecol {
+  width: 4.8%;
+}
+
+.twocol {
+  width: 13.45%;
+}
+
+.threecol {
+  width: 22.1%;
+}
+
+.fourcol {
+  width: 30.75%;
+}
+
+.fivecol {
+  width: 39.4%;
+}
+
+.sixcol {
+  width: 48.05%;
+}
+
+.sevencol {
+  width: 56.7%;
+}
+
+.eightcol {
+  width: 65.35%;
+}
+
+.ninecol {
+  width: 74%;
+}
+
+.tencol {
+  width: 82.65%;
+}
+
+.elevencol {
+  width: 91.3%;
+}

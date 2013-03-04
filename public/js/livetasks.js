@@ -1,60 +1,96 @@
 (function() {
-	// Se crea una variable jQuery de alcance limitado solo a este widget
+	// Create jQuery variable, scoping to widget
 	var jQuery;
+	var server = 'http://localhost:3000';
 
-	/******** Cargar jQuery si no esta presente *********/
+	/******** Load jQuery if not present *********/
 	if (window.jQuery === undefined || window.jQuery.fn.jquery !== '1.9.1') {
+	    // jQuery
 	    var script_tag = document.createElement('script');
-	    script_tag.setAttribute("type","text/javascript");
-	    script_tag.setAttribute("src", "http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js");
+	    script_tag.setAttribute('type', 'text/javascript');
+	    script_tag.setAttribute('src', 'http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js');
+
+	    var knockout = document.createElement('script');
+	    knockout.setAttribute('type', 'text/javascript');
+	    knockout.setAttribute('src', server+'/js/knockout-2.2.1.js');
+
 	    if (script_tag.readyState) {
-	    	// Para versiones viejitas de IE
+	    	// For IE old versions
 	      	script_tag.onreadystatechange = function () {
 				if (this.readyState == 'complete' || this.readyState == 'loaded') {
 	            	scriptLoadHandler();
 	          	}
 	      	};
 	    }
-	    else { // Cualquier otro navegador
+	    else { // Newest browsers
 	     	script_tag.onload = scriptLoadHandler;
 	    }
-	    // Intanta encontrar el elemento head, de lo contrario se deja el script como hijo de la primera etiqueta html encontrada
-	    (document.getElementsByTagName("head")[0] || document.documentElement).appendChild(script_tag);
+
+	    // Trying to find head element then append scripts
+	    (document.getElementsByTagName('head')[0] || document.documentElement).appendChild(script_tag);
+	    (document.getElementsByTagName('body')[0] || document.documentElement).appendChild(knockout);
 	} else {
-	    // Se instancia jQuery en nuestra variable global
+	    // Create an instance of jQuery
 	    jQuery = window.jQuery;
 	    main();
 	}
 
-	/******** Llamar a jQuery una vez que ha sido cargado ******/
+	/******** For old browsers, instantiate jQuery and init ******/
 	function scriptLoadHandler() {
-	    // Establecer que jQuery no haga conflictos con ninguna otra libreria y usar jQuery en lugar de $
 	    jQuery = window.jQuery.noConflict(true);
 	    main(); 
 	}
 
-	/******** Funcion principal, aqui va toda la logica ********/
+	/******** jQuery initializated, main logic here ********/
 	function main() { 
 	    jQuery(document).ready(function($) { 
-	        /******* Cargar los estilos *******/
+	        // Load styles
 	        var style = jQuery("<link>", { 
 	            rel: "stylesheet", 
 	            type: "text/css", 
-	            href: "http://localhost:3000/css/style.css" 
-	        });
-	        style.appendTo('head'); 
+	            href: server+"/css/style.css" 
+	        }).appendTo('head');
+
+	        var fm_1140 = jQuery("<link>", { 
+	            rel: "stylesheet", 
+	            type: "text/css", 
+	            href: server+"/css/1140.css" 
+	        }).appendTo('head');
+
+	        var fm_1140_ie = jQuery("<link>", { 
+	            rel: "stylesheet", 
+	            type: "text/css", 
+	            href: server+"/css/1140.ie.css" 
+	        }).appendTo('head');
 
 	        var content = '<div class="qoverlay"></div>';
 	        content    += '<div class="qcontent"></div>';
 
-	        /******* Cargar el boton principal *******/
-	        var linkButton = jQuery('<div id="anotatewidget"><a href"#"><img src="http://localhost:3000/images/feedback.png" /></a></div>'+content);
+	        /******* Place inside body the main button *******/
+	        var linkButton = jQuery('<div id="anotatewidget"><a href"#"><img src="'+server+'/images/feedback.png" /></a></div>'+content);
 	        linkButton.appendTo('body');
 
-	        jQuery('#anotatewidget').on('click', function(){
+	        /**
+	         * Sidebutton click event
+	         * launch the tasks window
+	         */
+	        jQuery('#anotatewidget').on('click', function(e){
+	        	var objModel = {
+				    name: 'Jack'
+				};
+
 	        	jQuery('.qoverlay, .qcontent').show();
+
+	        	jQuery.get(server+'/templates/tasks.html', null, function (tmp_data) {
+	        		jQuery(tmp_data).appendTo('.qcontent');
+		            ko.applyBindings(objModel);
+		        });
 	        });
 
+	        /**
+	         * Close tasks window
+	         * when esc key press
+	         */
 	        jQuery(document).keydown(function(e) {
 	        	if ((jQuery('.qoverlay').is(':visible')) && (e.keyCode == 27)) {
 	      			jQuery('.qoverlay, .qcontent').hide();
@@ -62,4 +98,4 @@
 			});
 	    });
 	}
-})(); // Para que funcione el script se debe de llamar como una funcion anonima
+})(); // Call as anonymous function
