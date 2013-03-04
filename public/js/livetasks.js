@@ -14,6 +14,10 @@
 	    knockout.setAttribute('type', 'text/javascript');
 	    knockout.setAttribute('src', server+'/js/knockout-2.2.1.js');
 
+	    var sockets = document.createElement('script');
+	    sockets.setAttribute('type', 'text/javascript');
+	    sockets.setAttribute('src', server+'/socket.io/socket.io.js');
+
 	    if (script_tag.readyState) {
 	    	// For IE old versions
 	      	script_tag.onreadystatechange = function () {
@@ -28,6 +32,7 @@
 
 	    // Trying to find head element then append scripts
 	    (document.getElementsByTagName('head')[0] || document.documentElement).appendChild(script_tag);
+	    (document.getElementsByTagName('head')[0] || document.documentElement).appendChild(sockets);
 	    (document.getElementsByTagName('body')[0] || document.documentElement).appendChild(knockout);
 	} else {
 	    // Create an instance of jQuery
@@ -66,36 +71,49 @@
 	        var content = '<div class="qoverlay"></div>';
 	        content    += '<div class="qcontent"></div>';
 
-	        /******* Place inside body the main button *******/
-	        var linkButton = jQuery('<div id="anotatewidget"><a href"#"><img src="'+server+'/images/feedback.png" /></a></div>'+content);
-	        linkButton.appendTo('body');
+	        var linkButton = null;
 
-	        /**
-	         * Sidebutton click event
-	         * launch the tasks window
-	         */
-	        jQuery('#anotatewidget').on('click', function(e){
-	        	var objModel = {
-				    name: 'Jack'
-				};
+	        /******* Using sockets communication */
+	        var qsocket = io.connect(server);
 
-	        	jQuery('.qoverlay, .qcontent').show();
-
-	        	jQuery.get(server+'/templates/tasks.html', null, function (tmp_data) {
-	        		jQuery(tmp_data).appendTo('.qcontent');
-		            ko.applyBindings(objModel);
-		        });
+	        qsocket.on('connect', function(){
+	        	console.log('Client listen');
+	        	begin();
 	        });
+			/******* End of sockets */
 
-	        /**
-	         * Close tasks window
-	         * when esc key press
-	         */
-	        jQuery(document).keydown(function(e) {
-	        	if ((jQuery('.qoverlay').is(':visible')) && (e.keyCode == 27)) {
-	      			jQuery('.qoverlay, .qcontent').hide();
-	    		}
-			});
+			var begin = function(){
+				/******* Place inside body the start button */
+		        linkButton = jQuery('<div id="anotatewidget"><a href"#"><img src="'+server+'/images/feedback.png" /></a></div>'+content);
+		        linkButton.appendTo('body');
+
+		        /**
+		         * Sidebutton click event
+		         * launch the tasks window
+		         */
+		        jQuery('#anotatewidget').on('click', function(e){
+		        	var objModel = {
+					    name: 'Jack'
+					};
+
+		        	jQuery('.qoverlay, .qcontent').show();
+
+		        	jQuery.get(server+'/templates/tasks.html', null, function (tmp_data) {
+		        		jQuery(tmp_data).appendTo('.qcontent');
+			            ko.applyBindings(objModel);
+			        });
+		        });
+
+		        /**
+		         * Close tasks window
+		         * when esc key press
+		         */
+		        jQuery(document).keydown(function(e) {
+		        	if ((jQuery('.qoverlay').is(':visible')) && (e.keyCode == 27)) {
+		      			jQuery('.qoverlay, .qcontent').hide();
+		    		}
+				});
+			};
 	    });
 	}
 })(); // Call as anonymous function

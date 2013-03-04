@@ -21,6 +21,7 @@ module.exports = function(app, express, path){
         app.use(express.methodOverride());
         app.use(allowCrossDomain);
         app.use(app.router);
+        //app.use('/static', express.static(__dirname + '/static'));
         app.use(express.static(path.join(__dirname, 'public')));
     });
 
