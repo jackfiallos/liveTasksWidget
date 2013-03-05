@@ -1,5 +1,9 @@
-/**
+ /**
  * Middleware allowCrossDomain
+ * 
+ * @author Jackfiallos
+ * @link https://github.com/jackfiallos/liveTasksWidget
+ *
  **/
 var allowCrossDomain = function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -12,6 +16,13 @@ var allowCrossDomain = function(req, res, next) {
     next();
 }
 
+/**
+ * Configuration parameters
+ * 
+ * @author Jackfiallos
+ * @link https://github.com/jackfiallos/liveTasksWidget
+ *
+ **/
 module.exports = function(app, express, path){
     app.configure(function(){
         app.set('port', process.env.PORT || 3000);
@@ -21,15 +32,16 @@ module.exports = function(app, express, path){
         app.use(express.methodOverride());
         app.use(allowCrossDomain);
         app.use(app.router);
-        //app.use('/static', express.static(__dirname + '/static'));
         app.use(express.static(path.join(__dirname, 'public')));
     });
 
     app.configure('development', function() {
         app.use(express.errorHandler({dumpExceptions: true, showStack: true})); 
+        app.set('db-uri','mongodb://localuser:localuserpwd@localhost/livetasks')
     });
     
     app.configure('production', function() {
       app.use(express.errorHandler()); 
+      app.set('db-uri','mongodb://user:password@localhost/livetasks')
     });
 };

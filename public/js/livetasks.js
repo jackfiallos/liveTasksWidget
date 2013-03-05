@@ -96,12 +96,37 @@
 					    name: 'Jack'
 					};
 
-		        	jQuery('.qoverlay, .qcontent').show();
+		        	jQuery('.qoverlay, .qcontent').show().empty();
 
 		        	jQuery.get(server+'/templates/tasks.html', null, function (tmp_data) {
 		        		jQuery(tmp_data).appendTo('.qcontent');
 			            ko.applyBindings(objModel);
 			        });
+		        });
+
+		        /**
+		         * 
+		         */
+		        jQuery(document).on('click', '#btnsubmit', function(e){
+		        	e.preventDefault();
+		        	jQuery.ajax({
+		        		type: jQuery(this).parent().attr('method'),
+						url: jQuery(this).parent().attr('action'),
+						dataType: 'json',
+						data: {
+							uri: jQuery(location).attr('href'), 
+							task: jQuery('#qtask').val()
+						},
+						beforeSend:function(){
+    						//
+  						},
+  						complete:function(){
+  							//
+  						},
+  						success:function(response){
+  							jQuery('<li>').html(response.task).appendTo('ul.tasklist');
+  						},
+		        	});
 		        });
 
 		        /**
@@ -112,6 +137,13 @@
 		        	if ((jQuery('.qoverlay').is(':visible')) && (e.keyCode == 27)) {
 		      			jQuery('.qoverlay, .qcontent').hide();
 		    		}
+				});
+
+				/* 
+				 * Socket linstener (news event)
+				 */
+				qsocket.on('news', function (data) {
+					jQuery('<li>').html(data.task).appendTo('ul.tasklist');
 				});
 			};
 	    });

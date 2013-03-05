@@ -4,9 +4,12 @@
       <p>Sidebar</p>
     </div>
     <div class="ninecol last">
-      <p>
-        Hi there, i'm <span data-bind="text: name"></span>!!
-      </p>
+      <form action="http://localhost:3000/save" method="post" name="frmTasks" id="frmTasks">
+        <input type="text" name="qtask" id="qtask" value="" />
+        <input type="button" name="btnsubmit" id="btnsubmit" value="Guardar" />
+      </form>
+      <ul class="tasklist">
+      </ul>
     </div>
   </div>
 </div>

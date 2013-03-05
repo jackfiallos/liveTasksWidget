@@ -13,4 +13,5 @@ This project use on client side
 
 On server side
 - expressjs
+- mongoose
 - socket.io
